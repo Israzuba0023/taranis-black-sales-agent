@@ -16,7 +16,6 @@ class SafetyGuardrails:
         text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL_ANONIMIZADO]', text)
         
         # 2. Anonimização de Números de Identificação Pessoal / Fiscal (BI, NIF, CPF, SSN, Passaporte)
-        # Deteta sequências numéricas e alfanuméricas de identificadores comuns (8 a 14 caracteres)
         text = re.sub(r'\b\d{3}[\s.-]?\d{3}[\s.-]?\d{3}[\s.-]?\d{2,3}\b', '[DOCUMENTO_PESSOAL_ANONIMIZADO]', text)
         text = re.sub(r'\b[A-Z0-9]{8,14}\b', '[DOCUMENTO_PESSOAL_ANONIMIZADO]', text)
         
