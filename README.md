@@ -1,5 +1,5 @@
 # 💼 Taranis Black — AI Sales Suite B2B
-![Taranis Black Logo](assets/taranis_logo.png)
+![Taranis Black Logo](assets/taranis_logo.jpeg)
 
 > **Challenge ONE G11 — AI for Business (Alura & Oracle)**
 
