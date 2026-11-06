@@ -29,54 +29,56 @@ Responda com tom executivo, direto, persuasivo e fundamentado em métricas de pr
 """
 
 class TaranisSalesAgent:
-    def __init__(self, mode: str = "copilot", provider: str = "Google Gemini", api_key: str = None, model_name: str = None):
-        """
-        Suporta múltiplos provedores: Google Gemini, OpenAI, Groq, DeepSeek.
-        """
+    def __init__(self, mode: str = "copilot", provider: str = "Google Gemini", api_key: str = None, custom_model: str = None):
         self.mode = mode
         self.provider = provider
         clean_key = (api_key or "").strip()
         
-        if not clean_key and provider != "Ollama (Local)":
+        if not clean_key:
             raise ValueError(f"Insira uma API Key válida para o provedor {provider}.")
 
         self.api_key = clean_key
         temp = 0.3 if mode == "copilot" else 0.7
 
-        # Instanciação dinâmica conforme o provedor
+        # Configuração flexível por Provedor com fallback de modelo padrão
         if provider == "Google Gemini":
             from langchain_google_genai import ChatGoogleGenerativeAI
-            selected_model = model_name or "gemini-1.5-flash"
+            # 'gemini-1.5-flash' ou 'gemini-2.0-flash'
+            model = custom_model.strip() if custom_model and custom_model.strip() else "gemini-1.5-flash"
             self.llm = ChatGoogleGenerativeAI(
-                model=selected_model,
+                model=model,
                 google_api_key=self.api_key,
                 temperature=temp
             )
-        elif provider == "OpenAI":
-            from langchain_openai import ChatOpenAI
-            if not self.api_key.startswith("sk-"):
-                raise ValueError("Para OpenAI, a chave deve começar com 'sk-'.")
-            selected_model = model_name or "gpt-4o-mini"
-            self.llm = ChatOpenAI(
-                model=selected_model,
-                api_key=self.api_key,
-                temperature=temp
-            )
+
         elif provider == "Groq (Gratuito/Rápido)":
             from langchain_groq import ChatGroq
             if not self.api_key.startswith("gsk_"):
-                raise ValueError("Para Groq, a chave deve começar com 'gsk_'.")
-            selected_model = model_name or "llama-3.3-70b-versatile"
+                raise ValueError("Para o Groq, a chave deve começar com 'gsk_'.")
+            # Modelo padrão atualizado do Groq
+            model = custom_model.strip() if custom_model and custom_model.strip() else "llama-3.3-70b-versatile"
             self.llm = ChatGroq(
-                model=selected_model,
+                model=model,
                 api_key=self.api_key,
                 temperature=temp
             )
+
+        elif provider == "OpenAI":
+            from langchain_openai import ChatOpenAI
+            if not self.api_key.startswith("sk-"):
+                raise ValueError("Para a OpenAI, a chave deve começar com 'sk-'.")
+            model = custom_model.strip() if custom_model and custom_model.strip() else "gpt-4o-mini"
+            self.llm = ChatOpenAI(
+                model=model,
+                api_key=self.api_key,
+                temperature=temp
+            )
+
         elif provider == "DeepSeek":
             from langchain_openai import ChatOpenAI
-            selected_model = model_name or "deepseek-chat"
+            model = custom_model.strip() if custom_model and custom_model.strip() else "deepseek-chat"
             self.llm = ChatOpenAI(
-                model=selected_model,
+                model=model,
                 api_key=self.api_key,
                 base_url="https://api.deepseek.com",
                 temperature=temp
