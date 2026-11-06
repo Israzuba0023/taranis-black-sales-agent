@@ -35,10 +35,15 @@ class TaranisSalesAgent:
         mode: 'copilot' para apoio comercial ou 'simulator' para roleplay C-Level.
         """
         self.mode = mode
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        clean_key = (api_key or os.getenv("OPENAI_API_KEY") or "").strip()
         
-        if not self.api_key:
-            raise ValueError("OPENAI_API_KEY não foi configurada.")
+        if not clean_key:
+            raise ValueError("Nenhuma OpenAI API Key foi informada.")
+            
+        if not clean_key.startswith("sk-"):
+            raise ValueError("Chave de API inválida. A OpenAI API Key deve começar com 'sk-'.")
+
+        self.api_key = clean_key
 
         self.llm = ChatOpenAI(
             model="gpt-4o-mini",
